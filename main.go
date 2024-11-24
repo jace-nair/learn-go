@@ -303,4 +303,42 @@ func main() {
 		printShapeInfo(v)
 		fmt.Println("---")
 	}
+
+	//-----------Using goroutines2.go--------------------
+
+	// declare a WaitGroup variable
+	var wg sync.WaitGroup
+
+	// Make a channel with appropriate buffer size for goroutines to pass data
+	c := make(chan string, 2)
+
+	// Add all the goroutines to the the waitgroup
+	wg.Add(2)
+
+	// Goroutine to get worker1
+	go worker1(c, &wg)
+
+	// Goroutine to get worker2
+	go worker2(c, &wg)
+
+	go func() {
+		wg.Wait() // Wait untill the above goroutines are done. Blocks until the WaitGroup counter is zero.
+		close(c)  // Close the channel
+	}()
+
+	// Wait untill the above goroutines are done. Blocks until the WaitGroup counter is zero.
+	//wg.Wait()
+
+	// Close the channel
+	//close(c)
+
+	// Consume the message from the channel
+	for msg := range c {
+		fmt.Println(msg)
+	}
+
+	// Consume the message from the channel
+	//output := <-c
+	//fmt.Println("Output from channel is", output)
+
 }

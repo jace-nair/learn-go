@@ -22,7 +22,7 @@ func getUserByName(name string) string {
 // Function to get user chats
 func getUserChats(userName string, ch chan<- *Message, wg *sync.WaitGroup) {
 	//wg.Add(1) //Adds to WaitGroup
-	//defer wg.Done() // Invokes Done message by the channel after function is exectuted
+	defer wg.Done() // Invokes Done message by the channel after function is exectuted
 	time.Sleep(time.Second * 2)
 
 	ch <- &Message{
@@ -33,13 +33,13 @@ func getUserChats(userName string, ch chan<- *Message, wg *sync.WaitGroup) {
 		},
 	}
 
-	wg.Done() //Done message by the channel for the WaitGroup
+	//wg.Done() //Done message by the channel for the WaitGroup
 }
 
 // Funtion to get user friends
 func getUserFriends(userName string, ch chan<- *Message, wg *sync.WaitGroup) {
 	//wg.Add(1) //Adds to WaitGroup
-	//defer wg.Done() // Invokes Done message by the channel after function is exectuted
+	defer wg.Done() // Invokes Done message by the channel after function is exectuted
 	time.Sleep(time.Second * 3)
 
 	ch <- &Message{
@@ -50,5 +50,5 @@ func getUserFriends(userName string, ch chan<- *Message, wg *sync.WaitGroup) {
 		},
 	}
 
-	wg.Done() //Done message by the channel for the WaitGroup
+	//wg.Done() //Done message by the channel for the WaitGroup
 }
