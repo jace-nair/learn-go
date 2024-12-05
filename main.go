@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -340,5 +341,68 @@ func main() {
 	// Consume the message from the channel
 	//output := <-c
 	//fmt.Println("Output from channel is", output)
+
+	//-----------Using handling-errors.go--------------------
+	fmt.Println()
+	// Calling doError()
+	resp, err := doError()
+	if err != nil {
+		fmt.Printf("There was an error: %v\n", err)
+	}
+	fmt.Printf("My message: %v\n", resp)
+
+	// Calling doNoError()
+	resp, err = doNoError()
+	if err != nil {
+		fmt.Printf("There was no error so this should not print %v\n", err)
+	}
+	fmt.Printf("My message: %v\n", resp)
+
+	// Calling doFmtError() that returns a formatted string
+	err = doFmtError()
+	if err != nil {
+		fmt.Printf("There was an error: %v\n", err)
+	}
+
+	// API access code
+
+	resourceUrl := "https://somesite.com/resource/1" //to provide access token
+	tokenUrl := "https://somesite.com/oauth/token"   // exchange auth code or refresh token for access token
+	_, errApi := runAccessToken(resourceUrl, false)
+	if errApi != nil {
+		fmt.Printf("could not access resource: %v\n", errApi)
+	}
+	_, errApi = runRefreshToken(tokenUrl, false)
+	if errApi != nil {
+		fmt.Printf("could not refresh access token: %v\n", errApi)
+	}
+	_, errApi = runAuthCode(tokenUrl, false)
+	if err != nil {
+		fmt.Printf("could not exchange auth code: %v\n", errApi)
+	}
+
+	fmt.Println()
+	// TOP, MIDDLE AND BOTTOM ERRORSTop
+	// An error chain. TOP error wraps MIDDLE error and MIDDLE error wraps bottom error.
+
+	bottom := ErrBottom{"I'm the bottom error"}
+	mid := ErrMiddle{"I'm the middle error", bottom}
+	top := ErrTop{"I'm the top error", mid}
+
+	// Use errors.Is() to find immediate next level error. To find whether this error chain has a MIDDLE error in it.
+
+	if errors.Is(top, mid) {
+		fmt.Println("There's a Middle Level Error in the Top Level Error") // Top Level Error embeds Middle Level Error. So, this is true. So this will print
+	}
+
+	if errors.Is(mid, top) {
+		fmt.Println("There's a Top Level Error in the Middle Level Error") // Middle Level Error does not embed Top Level Error. So, this is false. So this will not print.
+	}
+
+	if !errors.Is(mid, top) {
+		fmt.Println("There's no Top Level Error in the Middle Level Error") // Middle Level Error does not embed Top Level Error. So this is true. So this will print.
+	}
+
+	// Use errors.As() to find the bottom most level of the entire error chain.
 
 }
