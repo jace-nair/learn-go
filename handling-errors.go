@@ -141,6 +141,7 @@ func runAuthCode(url string, succeed bool) (string, error) {
 	return "", ErrAuthCodeInvalid{url, 400, "authorization code expired"}
 }
 
+// --------ERROR WRAPPING --------------
 // Advanced Error types - Wrap, Unwrap, Is & As.
 // Three error types defined here. TOP, MIDDLE & BOTTOM
 
@@ -183,3 +184,7 @@ type ErrBottom struct {
 func (eb ErrBottom) Error() string {
 	return eb.msg
 }
+
+// ------With ERROR WRAPPING, you get additonal functionality with Printf from fmt package. There's an extra verb with "%w" ----
+// What "%w" does is, if you pass in an error, it will expand out the entire error chain.
+// View main.go for demo

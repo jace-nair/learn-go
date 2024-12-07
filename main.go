@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -385,6 +386,7 @@ func main() {
 	// TOP, MIDDLE AND BOTTOM ERRORSTop
 	// An error chain. TOP error wraps MIDDLE error and MIDDLE error wraps bottom error.
 
+	// Setting the error messages
 	bottom := ErrBottom{"I'm the bottom error"}
 	mid := ErrMiddle{"I'm the middle error", bottom}
 	top := ErrTop{"I'm the top error", mid}
@@ -404,5 +406,45 @@ func main() {
 	}
 
 	// Use errors.As() to find the bottom most level of the entire error chain.
+
+	// Instantiate a new instance of ErrBottom type. Check the error chain from the top to find the bottom error using errors.As() method.
+	var newBot ErrBottom
+	if errors.As(top, &newBot) {
+		fmt.Println("Found bottom level error:", newBot)
+	}
+
+	// fmt.Printf() with "%w" verb in error wrapping shows the entire error chain
+	fmt.Printf("My error chain: %w\n", top)
+
+	// fmt.Errorf() returns a formatted string as an error
+	newBot2 := ErrBottom{"This is a new bottom error"}
+	newErr := fmt.Errorf("this is another error: %w", newBot2)
+
+	if errors.Is(newErr, newBot2) {
+		fmt.Println("This has a bottom error in it")
+	}
+
+	//-----------Using context.go--------------------
+	fmt.Println()
+	fmt.Println("Uncomment Example 1 in main.go to USE it")
+	// Example 1. UNCOMMENT below two lines to USE IT
+	/*http.HandleFunc("/hello", helloHandler)
+	http.ListenAndServe(":8080", nil)*/
+
+	// Example 2
+	ctx := context.Background() //initiate an empty parent context
+	exampleTimeout(ctx)
+
+	// Example 2 (another one)
+	ctx2 := context.Background()
+	doSomethingCool(ctx2)
+
+	// Example 3
+	exampleWithValues()
+
+	// Example 3 (another one)
+	ctx3 := context.Background()
+	ctx3 = enrichContext3(ctx3)
+	doSomethingCool3(ctx3)
 
 }
